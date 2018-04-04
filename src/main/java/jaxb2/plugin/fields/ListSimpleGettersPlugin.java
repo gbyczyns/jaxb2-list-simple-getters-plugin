@@ -7,7 +7,6 @@ import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JFieldVar;
@@ -44,34 +43,23 @@ public class ListSimpleGettersPlugin extends AbstractParameterizablePlugin {
 			Arrays.stream(classOutline.getDeclaredFields()) //
 				.filter(fieldOutline -> fieldOutline.getRawType().erasure() instanceof JClass) //
 				.filter(fieldOutline -> refList.isAssignableFrom((JClass) fieldOutline.getRawType().erasure())) //
-				.forEach(fieldOutline -> {
-					JFieldVar jFieldVar = classOutline.implClass.fields().get(fieldOutline.getPropertyInfo().getName(false));
-
-					String getterName = createConventionGetterName(jFieldVar.name());
-
-					classOutline.implClass.methods().removeIf(jMethod -> getterName.equals(jMethod.name()) && jMethod.params().isEmpty());
-
-					createSimpleGetter(classOutline, jFieldVar, getterName);
-				});
+				.map(fieldOutline -> fieldOutline.getPropertyInfo().getName(false)) //
+				.map(fieldName -> classOutline.implClass.fields().get(fieldName)) //
+				.forEach(jFieldVar -> createSimpleGetter(jFieldVar, classOutline));
 		}
 		return true;
 	}
 
-	private String createConventionGetterName(String fieldName) {
-		char firstLetter = fieldName.charAt(0);
-		String firstLetterUpperCase = Character.valueOf(firstLetter).toString().toUpperCase();
-		return "get" + firstLetterUpperCase + fieldName.substring(1);
+	private void createSimpleGetter(JFieldVar jFieldVar, ClassOutline classOutline) {
+		String getterName = generateGetterName(jFieldVar);
+		classOutline.implClass.methods().removeIf(jMethod -> getterName.equals(jMethod.name()) && jMethod.params().isEmpty());
+
+		JMethod jMethod = classOutline.implClass.method(JMod.PUBLIC, jFieldVar.type(), getterName);
+		jMethod.body()._return(jFieldVar);
 	}
 
-	private JMethod createSimpleGetter(ClassOutline classOutline, JFieldVar jFieldVar, String mehtodName) {
-		JMethod jMethod = classOutline.implClass.method(JMod.PUBLIC, jFieldVar.type(), mehtodName);
-
-		// Add method body
-		JBlock jBlock = jMethod.body();
-
-		// return variable
-		jBlock._return(jFieldVar);
-
-		return jMethod;
+	private String generateGetterName(JFieldVar jFieldVar) {
+		String name = jFieldVar.name();
+		return "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 }
