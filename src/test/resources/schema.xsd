@@ -2,22 +2,12 @@
 <xs:schema elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-           jaxb:extensionBindingPrefixes="sg"
-           jaxb:version="2.1"
-           xmlns:sg="http://list.simple.getters">
+           jaxb:version="2.1">
 
     <xs:complexType name="Foo">
         <xs:sequence>
-            <xs:element name="bar" type="xs:string" minOccurs="0"
-                        maxOccurs="unbounded">
-                <xs:annotation>
-                    <xs:appinfo>
-                        <sg:create-simple-getter/>
-                    </xs:appinfo>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="baz" type="xs:string" minOccurs="0"
-                        maxOccurs="unbounded"/>
+            <xs:element name="bar" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="baz" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
 
