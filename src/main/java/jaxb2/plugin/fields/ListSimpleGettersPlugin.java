@@ -68,9 +68,6 @@ public class ListSimpleGettersPlugin extends AbstractParameterizablePlugin {
     private JMethod createSimpleGetter(ClassOutline classOutline, JFieldVar jFieldVar, String mehtodName) {
         JMethod jMethod = classOutline.implClass.method(JMod.PUBLIC, jFieldVar.type(), mehtodName);
 
-        // Add java doc for method
-        jMethod.javadoc().add("Gets the value of the " + jFieldVar.name() + " property.");
-
         // Add method body
         JBlock jBlock = jMethod.body();
 
