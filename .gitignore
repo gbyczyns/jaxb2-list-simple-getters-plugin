@@ -14,3 +14,9 @@ hs_err_pid*
 .idea
 *.iml
 /target
+.settings/
+.project
+.classpath
+/.gradle/
+/bin/
+/build/
